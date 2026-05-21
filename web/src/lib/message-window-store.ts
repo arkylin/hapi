@@ -840,9 +840,8 @@ export async function fetchOlderMessages(api: ApiClient, sessionId: string): Pro
 
         updateStateForGeneration(sessionId, 'older', generation, (prev) => {
             const merged = mergeMessages(response.messages, prev.messages)
-            const trimmed = trimVisible(merged, 'prepend')
             return buildState(prev, {
-                messages: trimmed,
+                messages: merged,
                 hasMore: response.page.hasMore,
                 oldestPositionAt: nextBeforeAt,
                 oldestPositionSeq: nextBeforeSeq,

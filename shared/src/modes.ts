@@ -17,6 +17,9 @@ export type CodexCollaborationMode = typeof CODEX_COLLABORATION_MODES[number]
 export const GEMINI_PERMISSION_MODES = ['default', 'read-only', 'safe-yolo', 'yolo'] as const
 export type GeminiPermissionMode = typeof GEMINI_PERMISSION_MODES[number]
 
+export const KIMI_PERMISSION_MODES = ['default', 'read-only', 'safe-yolo', 'yolo'] as const
+export type KimiPermissionMode = typeof KIMI_PERMISSION_MODES[number]
+
 export const OPENCODE_PERMISSION_MODES = ['default', 'yolo'] as const
 export type OpencodePermissionMode = typeof OPENCODE_PERMISSION_MODES[number]
 
@@ -35,7 +38,7 @@ export const PERMISSION_MODES = [
 ] as const
 export type PermissionMode = typeof PERMISSION_MODES[number]
 
-export type AgentFlavor = 'claude' | 'codex' | 'gemini' | 'opencode' | 'cursor'
+export type AgentFlavor = 'claude' | 'codex' | 'gemini' | 'kimi' | 'opencode' | 'cursor'
 
 export const PERMISSION_MODE_LABELS: Record<PermissionMode, string> = {
     default: 'Default',
@@ -95,6 +98,9 @@ export function getPermissionModesForFlavor(flavor?: string | null): readonly Pe
     }
     if (flavor === 'gemini') {
         return GEMINI_PERMISSION_MODES
+    }
+    if (flavor === 'kimi') {
+        return KIMI_PERMISSION_MODES
     }
     if (flavor === 'opencode') {
         return OPENCODE_PERMISSION_MODES

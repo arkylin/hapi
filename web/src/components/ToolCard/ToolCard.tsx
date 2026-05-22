@@ -14,7 +14,7 @@ import { isAskUserQuestionToolName } from '@/components/ToolCard/askUserQuestion
 import { isRequestUserInputToolName } from '@/components/ToolCard/requestUserInput'
 import { getToolPresentation } from '@/components/ToolCard/knownTools'
 import { getToolFullViewComponent, getToolViewComponent } from '@/components/ToolCard/views/_all'
-import { getToolResultViewComponent } from '@/components/ToolCard/views/_results'
+import { getToolResultViewComponent, ResultStatusPill, placeholderForState } from '@/components/ToolCard/views/_results'
 import { formatTaskChildLabel, TaskStateIcon } from '@/components/ToolCard/helpers'
 import type { TerminalToolDisplayMode } from '@/hooks/useTerminalToolDisplayMode'
 import { usePointerFocusRing } from '@/hooks/usePointerFocusRing'
@@ -121,6 +121,12 @@ function renderToolInput(block: ToolCallBlock, surface: 'inline' | 'dialog' = 'i
         : {}
     const toolName = block.tool.name
     const input = block.tool.input
+
+    // Gracefully handle null/undefined input (common with ACP agents like Kimi
+    // that stream tool arguments after the initial tool_call event).
+    if (input === null || input === undefined) {
+        return <ResultStatusPill text={placeholderForState(block.tool.state)} />
+    }
 
     if (isSubagentToolName(toolName) && isObject(input) && typeof input.prompt === 'string') {
         return <MarkdownRenderer content={input.prompt} />

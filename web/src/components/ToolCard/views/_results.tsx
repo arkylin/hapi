@@ -304,7 +304,7 @@ function renderText(text: string, opts: { mode: 'markdown' | 'code' | 'auto'; la
     return renderResultBody(renderMarkdown(text, opts.surface), opts.surface)
 }
 
-function placeholderForState(state: ToolViewProps['block']['tool']['state']): string {
+export function placeholderForState(state: ToolViewProps['block']['tool']['state']): string {
     if (state === 'pending') return 'Waiting for permission…'
     if (state === 'running') return 'Running…'
     return '(no output)'
@@ -411,7 +411,7 @@ function ResultMetaPill(props: { children: ReactNode }) {
     )
 }
 
-function ResultStatusPill(props: { text: string }) {
+export function ResultStatusPill(props: { text: string }) {
     return <ResultMetaPill>{props.text}</ResultMetaPill>
 }
 
@@ -986,7 +986,14 @@ export const toolResultViewRegistry: Record<string, ToolViewComponent> = {
     AskUserQuestion: AskUserQuestionResultView,
     ExitPlanMode: MarkdownResultView,
     ask_user_question: AskUserQuestionResultView,
-    exit_plan_mode: MarkdownResultView
+    exit_plan_mode: MarkdownResultView,
+    // Kimi / OpenCode ACP tools
+    str_replace_file: MutationResultView,
+    str_replace: MutationResultView,
+    write_file: MutationResultView,
+    write: MutationResultView,
+    read_file: ReadResultView,
+    view: ReadResultView
 }
 
 export function getToolResultViewComponent(toolName: string): ToolViewComponent {

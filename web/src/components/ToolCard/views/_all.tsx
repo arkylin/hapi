@@ -90,7 +90,12 @@ export const toolViewRegistry: Record<string, ToolViewComponent> = {
     ExitPlanMode: ExitPlanModeView,
     ask_user_question: AskUserQuestionView,
     exit_plan_mode: ExitPlanModeView,
-    request_user_input: RequestUserInputView
+    request_user_input: RequestUserInputView,
+    // Kimi / OpenCode ACP tools
+    str_replace_file: EditView,
+    str_replace: EditView,
+    write_file: WriteView,
+    write: WriteView
 }
 
 export const toolFullViewRegistry: Record<string, ToolViewComponent> = {
@@ -110,7 +115,12 @@ export const toolFullViewRegistry: Record<string, ToolViewComponent> = {
     ExitPlanMode: ExitPlanModeView,
     ask_user_question: AskUserQuestionView,
     exit_plan_mode: ExitPlanModeView,
-    request_user_input: RequestUserInputView
+    request_user_input: RequestUserInputView,
+    // Kimi / OpenCode ACP tools
+    str_replace_file: EditView,
+    str_replace: EditView,
+    write_file: WriteView,
+    write: WriteView
 }
 
 export function getToolViewComponent(toolName: string): ToolViewComponent | null {

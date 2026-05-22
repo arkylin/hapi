@@ -275,7 +275,6 @@ export function HappyThread(props: {
     const loadStartedRef = useRef(false)
     const isLoadingMoreRef = useRef(props.isLoadingMoreMessages)
     const hasMoreMessagesRef = useRef(props.hasMoreMessages)
-    const isLoadingMessagesRef = useRef(props.isLoadingMessages)
     const messagesVersionRef = useRef(props.messagesVersion)
     const onLoadMoreRef = useRef(props.onLoadMore)
     const handleLoadMoreRef = useRef<() => void>(() => {})
@@ -303,9 +302,6 @@ export function HappyThread(props: {
     useEffect(() => {
         hasMoreMessagesRef.current = props.hasMoreMessages
     }, [props.hasMoreMessages])
-    useEffect(() => {
-        isLoadingMessagesRef.current = props.isLoadingMessages
-    }, [props.isLoadingMessages])
     useEffect(() => {
         messagesVersionRef.current = props.messagesVersion
     }, [props.messagesVersion])
@@ -508,7 +504,6 @@ export function HappyThread(props: {
         }
         if (
             isInitialScrollSettling()
-            || isLoadingMessagesRef.current
             || !hasMoreMessagesRef.current
             || isLoadingMoreRef.current
             || loadLockRef.current
@@ -583,7 +578,7 @@ export function HappyThread(props: {
     useEffect(() => {
         const sentinel = topSentinelRef.current
         const viewport = viewportRef.current
-        if (!sentinel || !viewport || !props.hasMoreMessages || props.isLoadingMessages) {
+        if (!sentinel || !viewport || !props.hasMoreMessages) {
             return
         }
         if (typeof IntersectionObserver === 'undefined') {
@@ -609,7 +604,7 @@ export function HappyThread(props: {
 
         observer.observe(sentinel)
         return () => observer.disconnect()
-    }, [props.hasMoreMessages, props.isLoadingMessages, isInitialScrollSettling])
+    }, [props.hasMoreMessages, isInitialScrollSettling])
 
     useEffect(() => {
         const content = contentRef.current
@@ -707,7 +702,7 @@ export function HappyThread(props: {
                                         </div>
                                     ) : null}
 
-                                    {props.hasMoreMessages && !props.isLoadingMessages ? (
+                                    {props.hasMoreMessages ? (
                                         <div className="py-1 mb-2">
                                             <div className="mx-auto w-fit">
                                                 <Button
@@ -716,7 +711,7 @@ export function HappyThread(props: {
                                                     onClick={() => {
                                                         void loadOlderPreservingScroll()
                                                     }}
-                                                    disabled={props.isLoadingMoreMessages || props.isLoadingMessages}
+                                                    disabled={props.isLoadingMoreMessages}
                                                     aria-busy={props.isLoadingMoreMessages}
                                                     className="gap-1.5 text-xs opacity-80 hover:opacity-100"
                                                 >

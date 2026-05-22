@@ -56,12 +56,18 @@ function normalizeToolKind(kind: string | null): 'read' | 'execute' | 'search' |
  * Extracts the argument from a title that uses a "Category: argument" pattern.
  * Many ACP agents (notably Kimi) emit titles like "Shell: free -h" or
  * "Read: README.md" where the part after the colon is the actual tool argument.
- * Returns the raw title when no colon prefix is found.
+ *
+ * Only strips the prefix when the label before the colon normalizes to the
+ * same tool kind, so valid commands/paths that contain colons (e.g.
+ * curl http://localhost:3000, git commit -m "feat: add Kimi") are not corrupted.
+ * Returns the raw title when no matching prefix is found.
  */
-function extractTitleArgument(title: string): string {
-    const idx = title.indexOf(':');
-    if (idx <= 0) return title;
-    return title.slice(idx + 1).trimStart();
+function extractTitleArgument(title: string, kind: string | null): string {
+    const normalizedKind = normalizeToolKind(kind);
+    const match = title.match(/^([A-Za-z][A-Za-z _-]{0,31}):\s+(.+)$/);
+    if (!match) return title;
+    const labelKind = normalizeToolKind(match[1]);
+    return labelKind && labelKind === normalizedKind ? match[2] : title;
 }
 
 /**
@@ -95,7 +101,7 @@ function deriveInputFromKindAndTitle(
         return path ? { file_path: path } : null;
     }
     if (!title) return null;
-    const arg = extractTitleArgument(title);
+    const arg = extractTitleArgument(title, kind);
     switch (normalizedKind) {
         case 'read':
             return { file_path: arg };
@@ -151,9 +157,9 @@ function extractJsonInputFromContent(content: unknown): Record<string, unknown> 
  *   - the update title contains a colon (indicating it carries the real arg)
  *   - the existing input is a derived object whose value matches the OLD title
  */
-function isStaleDerivedInput(existingInput: unknown, updateTitle: string | null): boolean {
+function isStaleDerivedInput(existingInput: unknown, updateTitle: string | null, kind: string | null): boolean {
     if (!updateTitle) return false;
-    const arg = extractTitleArgument(updateTitle);
+    const arg = extractTitleArgument(updateTitle, kind);
     // No colon in title — nothing to extract, not stale
     if (arg === updateTitle) return false;
     if (!isObject(existingInput)) return false;
@@ -627,7 +633,7 @@ export class AcpMessageHandler {
             let name = existing.name;
             let rederived = false;
             const updateTitle = asString(update.title);
-            if (input == null || isStaleDerivedInput(input, updateTitle)) {
+            if (input == null || isStaleDerivedInput(input, updateTitle, asString(update.kind))) {
                 const fallback = deriveInputFromKindAndTitle(asString(update.kind), updateTitle, update.locations);
                 if (fallback) {
                     input = fallback;
@@ -639,7 +645,7 @@ export class AcpMessageHandler {
             }
             // Kimi ACP streams tool arguments as JSON text in the content array.
             // If we still don't have a useful input, try to parse the content.
-            if (!rederived && (input == null || isStaleDerivedInput(input, updateTitle))) {
+            if (!rederived && (input == null || isStaleDerivedInput(input, updateTitle, asString(update.kind)))) {
                 const fromContent = extractJsonInputFromContent(update.content);
                 if (fromContent && isObject(fromContent)) {
                     input = fromContent;

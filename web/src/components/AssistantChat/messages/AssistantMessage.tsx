@@ -61,6 +61,7 @@ export function HappyAssistantMessage() {
         || (typeof durationMs === 'number' && durationMs >= 0)
         || usage != null
         || (messageModel != null && messageModel !== '')
+        || (typeof turnCount === 'number' && turnCount >= 2)
 
     const rootClass = toolOnly
         ? 'py-1 min-w-0 max-w-full overflow-x-hidden'
@@ -127,6 +128,7 @@ export function HappyAssistantMessage() {
                                 durationMs={durationMs}
                                 usage={usage}
                                 model={messageModel ?? null}
+                                turnCount={turnCount}
                             />
                         )}
                     </div>

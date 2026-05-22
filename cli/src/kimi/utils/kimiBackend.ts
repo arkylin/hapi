@@ -1,4 +1,5 @@
 import { AcpSdkBackend } from '@/agent/backends/acp';
+import { buildKimiEnv } from './config';
 
 function filterEnv(env: NodeJS.ProcessEnv): Record<string, string> {
     const result: Record<string, string> = {};
@@ -16,10 +17,10 @@ export function createKimiBackend(opts: {
     cwd?: string;
     permissionMode?: string;
 }): AcpSdkBackend {
-    const env: Record<string, string> = filterEnv(process.env);
-    if (opts.cwd) {
-        env.KIMI_PROJECT_DIR = opts.cwd;
-    }
+    const env = filterEnv(buildKimiEnv({
+        model: opts.model,
+        cwd: opts.cwd
+    }));
 
     return new AcpSdkBackend({
         command: 'kimi',
